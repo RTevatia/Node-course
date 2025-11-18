@@ -1,9 +1,11 @@
-var url = "http://mylogger.io/log";
+const EventEmitter = require("events");
 
-function log(message) {
+class Logger extends EventEmitter {
+  log(message) {
     console.log(message);
+    // Raise an event
+    this.emit("messageLogged", { id: 1, url: "http:// " });
+  }
 }
 
-// module.exports.log = log; //export object
-
-module.exports = log; // export function
+module.exports = Logger; // export function

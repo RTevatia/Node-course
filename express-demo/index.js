@@ -1,3 +1,6 @@
+const startupDebugger = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
+
 const config = require("config");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -17,14 +20,18 @@ app.use(express.static("public"));
 app.use(helmet());
 
 // Configuration
-console.log(`Application name: ${config.get("name")}`);
-console.log(`Mail server: ${config.get("mail.host")}`);
-console.log(`Mail password: ${config.get("mail.password")}`);
+// console.log(`Application name: ${config.get("name")}`);
+// console.log(`Mail server: ${config.get("mail.host")}`);
+// console.log(`Mail password: ${config.get("mail.password")}`);
 
+// Use debug module
 if (app.get("env") === "development") {
   app.use(morgan("tiny"));
-  console.log("Morgan enabled...");
+  startupDebugger("Morgan enabled...");
 }
+
+// Some db work...
+dbDebugger("Connected to the database...");
 
 app.use(logger);
 app.use(authenticate);

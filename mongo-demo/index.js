@@ -12,3 +12,18 @@ const courseSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
 });
+
+async function createCourse() {
+  const Course = mongoose.model("Course", courseSchema);
+  const course = new Course({
+    name: "Angular Course",
+    author: "Rahul",
+    tags: ["angular", "frontend"],
+    isPublished: true,
+  });
+
+  const result = await course.save();
+  console.log(result);
+}
+
+createCourse();

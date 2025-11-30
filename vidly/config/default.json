@@ -1,0 +1,6 @@
+{
+  "name": "Vidly App",
+  "mail": {
+    "host": "default_mail_server"
+  }
+}

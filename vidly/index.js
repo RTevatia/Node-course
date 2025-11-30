@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const config = require("config");
 const homepage = require("./routes/homepage");
 const genres = require("./routes/genres");
+const customers = require("./routes/customers");
 const express = require("express");
 const app = express();
 
@@ -15,6 +16,7 @@ mongoose
 app.use(express.json());
 app.use("/", homepage);
 app.use("/api/genre", genres);
+app.use("/api/customer", customers);
 
 // Configuration
 console.log(app.get("env"));

@@ -17,14 +17,14 @@ const Course = mongoose.model(
   "Course",
   new mongoose.Schema({
     name: String,
-    author: authorSchema,
+    authors: [authorSchema],
   })
 );
 
-async function createCourse(name, author) {
+async function createCourse(name, authors) {
   const course = new Course({
     name,
-    author,
+    authors,
   });
 
   const result = await course.save();
@@ -36,12 +36,24 @@ async function listCourses() {
   console.log(courses);
 }
 
-async function updateAuthor(courseID) {
-  const course = await Course.updateOne(
-    { _id: courseID }, 
-    { $unset: {"author.name": ""} });
+async function addAuthor(courseId, author) {
+  const course = await Course.findById(courseId);
+  course.authors.push(author);
+  course.save();
 }
 
-// createCourse("Node Course", new Author({ name: "Mosh" }));
-updateAuthor("692cd8198c4887a93cbc1686");
-// listCourses();
+async function removeAuthor(courseId, authorId) {
+  const course = await Course.findById(courseId);
+  const author = course.authors.id(authorId);
+  author.deleteOne();
+  course.save();
+}
+
+// createCourse("Node Course", [
+//   new Author({ name: "Mosh" }),
+//   new Author({ name: "John" }),
+// ]);
+
+// addAuthor("692cddc9a7eb0e0f1e1205b4", new Author({ name: "Amy" }));
+
+removeAuthor("692cddc9a7eb0e0f1e1205b4", "692cdec45352a18551c46ef1");

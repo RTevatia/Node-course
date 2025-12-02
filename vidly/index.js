@@ -4,6 +4,7 @@ const homepage = require("./routes/homepage");
 const genres = require("./routes/genres");
 const customers = require("./routes/customers");
 const movies = require("./routes/movies");
+const rentals = require("./routes/rentals");
 const express = require("express");
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/", homepage);
 app.use("/api/genre", genres);
 app.use("/api/customer", customers);
 app.use("/api/movie", movies);
+app.use("/api/rental", rentals);
 
 // Configuration
 console.log(app.get("env"));

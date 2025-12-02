@@ -1,3 +1,5 @@
+const Joi = require("joi");
+Joi.objectid = require('joi-objectid')(Joi);
 const mongoose = require("mongoose");
 const config = require("config");
 const homepage = require("./routes/homepage");

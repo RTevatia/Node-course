@@ -21,7 +21,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
-  if (error) res.status(400).send(error.detials[0].message);
+  if (error) res.status(400).send(error.details[0].message);
 
   const customer = await Customer.findById(req.body.customerId);
   if (!customer) res.status(400).send("Invalid customer.");
@@ -44,12 +44,33 @@ router.post("/", async (req, res) => {
       dailyRentalRate: movie.dailyRentalRate,
     },
   });
-  rental = await rental.save();
 
-  movie.numberInStock--;
-  movie.save();
+  try {
+    // 1. Save the rental first
+    await rental.save();
 
-  res.send(rental);
+    // 2. Update movie stock
+    const result = await Movie.updateOne(
+      {
+        _id: movie._id,
+        numberInStock: { $gt: 0 }, // Ensure stock hasn't changed
+      },
+      {
+        $inc: { numberInStock: -1 },
+      }
+    );
+
+    // 3. Check if update was successful
+    if (result.modifiedCount === 0) {
+      // Rollback: delete the rental if movie update failed
+      await Rental.deleteOne({ _id: rental._id });
+      return res.status(400).send("Movie is no longer in stock");
+    }
+
+    res.send(rental);
+  } catch (ex) {
+    res.status(500).send("Something failed: " + ex.message);
+  }
 });
 
 module.exports = router;

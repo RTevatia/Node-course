@@ -8,6 +8,7 @@ const customers = require("./routes/customers");
 const movies = require("./routes/movies");
 const rentals = require("./routes/rentals");
 const users = require("./routes/users");
+const auth = require("./routes/auth");
 const express = require("express");
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/customer", customers);
 app.use("/api/movie", movies);
 app.use("/api/rental", rentals);
 app.use("/api/user", users);
+app.use("/api/auth", auth);
 
 // Configuration
 console.log(app.get("env"));

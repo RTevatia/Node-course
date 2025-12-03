@@ -32,6 +32,10 @@ app.use("/api/auth", auth);
 console.log(app.get("env"));
 console.log("Application name:", config.get("name"));
 console.log("Mail server:", config.get("mail.host"));
+if (!config.get("jwtPrivateKey")) {
+  console.error("FATAL ERROR: jwtPrivateKey is not defined");
+  process.exit(1);
+}
 
 // Port access
 const port = process.env.PORT || 3000;

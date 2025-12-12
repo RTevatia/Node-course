@@ -9,6 +9,7 @@ const movies = require("./routes/movies");
 const rentals = require("./routes/rentals");
 const users = require("./routes/users");
 const auth = require("./routes/auth");
+const error = require("./middleware/error");
 const express = require("express");
 const app = express();
 
@@ -27,6 +28,8 @@ app.use("/api/movie", movies);
 app.use("/api/rental", rentals);
 app.use("/api/user", users);
 app.use("/api/auth", auth);
+
+app.use(error); // should be the last middleware
 
 // Configuration
 console.log(app.get("env"));

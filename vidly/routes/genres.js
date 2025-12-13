@@ -6,6 +6,8 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+  // This will trigger the error middleware
+  // throw new Error('Test error from GET /api/genres');
   const genre = await Genre.find().sort("name");
   res.send(genre);
 });

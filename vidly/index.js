@@ -1,5 +1,6 @@
 require("express-async-errors");
-const winston = require('winston');
+const winston = require("winston");
+require("winston-mongodb");
 const Joi = require("joi");
 Joi.objectid = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
@@ -15,21 +16,57 @@ const error = require("./middleware/error");
 const express = require("express");
 const app = express();
 
-// Create logger
-const logger = winston.createLogger({
+// Create logger WITHOUT MongoDB transport initially
+global.logger = winston.createLogger({
   transports: [
-    new winston.transports.File({ filename: 'logfile.log' })
-  ]
+    new winston.transports.File({ filename: "logfile.log" }),
+    new winston.transports.Console(), // Always good to have console output
+  ],
 });
-
-// Make logger available globally
-global.logger = logger;
 
 // Connect MongoDB
 mongoose
   .connect("mongodb://localhost/vidly")
-  .then(() => console.log("Connected to MongoDB..."))
-  .catch((error) => console.log("Couldn't connect to MongoDB...", error));
+  .then(() => {
+    console.log("Connected to MongoDB...");
+
+    // Add MongoDB transport AFTER successful connection
+    require("winston-mongodb");
+    logger.add(
+      new winston.transports.MongoDB({
+        db: mongoose.connection,
+        collection: "error_logs",
+        level: "error",
+      })
+    );
+
+    console.log("MongoDB logging enabled");
+  })
+  .catch((error) => {
+    console.log("Couldn't connect to MongoDB...", error);
+  });
+
+// Error handlers (they'll use whatever transports are available)
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection:", {
+    metadata: {
+      reason: reason.message || reason,
+      stack: reason.stack,
+      timestamp: new Date().toISOString(),
+    },
+  });
+});
+
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception:", {
+    metadata: {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+    },
+  });
+  process.exit(1);
+});
 
 // Middleware
 app.use(express.json());

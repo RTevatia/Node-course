@@ -1,4 +1,5 @@
 require("express-async-errors");
+const winston = require('winston');
 const Joi = require("joi");
 Joi.objectid = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
@@ -13,6 +14,16 @@ const auth = require("./routes/auth");
 const error = require("./middleware/error");
 const express = require("express");
 const app = express();
+
+// Create logger
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.File({ filename: 'logfile.log' })
+  ]
+});
+
+// Make logger available globally
+global.logger = logger;
 
 // Connect MongoDB
 mongoose

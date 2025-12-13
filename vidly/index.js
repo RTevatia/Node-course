@@ -1,3 +1,4 @@
+require("express-async-errors");
 const Joi = require("joi");
 Joi.objectid = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");

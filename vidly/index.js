@@ -3,12 +3,13 @@ const winston = require("winston");
 require("winston-mongodb");
 const Joi = require("joi");
 Joi.objectid = require("joi-objectid")(Joi);
-const mongoose = require("mongoose");
+
 const config = require("config");
 const express = require("express");
 const app = express();
 
 require("./startup/routes")(app);
+require("./startup/db")();
 
 // Create logger WITHOUT MongoDB transport initially
 global.logger = winston.createLogger({
@@ -27,28 +28,6 @@ global.logger = winston.createLogger({
     new winston.transports.Console(),
   ],
 });
-
-// Connect MongoDB
-mongoose
-  .connect("mongodb://localhost/vidly")
-  .then(() => {
-    console.log("Connected to MongoDB...");
-
-    // Add MongoDB transport AFTER successful connection
-    require("winston-mongodb");
-    logger.add(
-      new winston.transports.MongoDB({
-        db: mongoose.connection,
-        collection: "error_logs",
-        level: "error",
-      })
-    );
-
-    console.log("MongoDB logging enabled");
-  })
-  .catch((error) => {
-    console.log("Couldn't connect to MongoDB...", error);
-  });
 
 // Configuration
 console.log(app.get("env"));

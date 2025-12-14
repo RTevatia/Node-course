@@ -5,16 +5,10 @@ const Joi = require("joi");
 Joi.objectid = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const config = require("config");
-const homepage = require("./routes/homepage");
-const genres = require("./routes/genres");
-const customers = require("./routes/customers");
-const movies = require("./routes/movies");
-const rentals = require("./routes/rentals");
-const users = require("./routes/users");
-const auth = require("./routes/auth");
-const error = require("./middleware/error");
 const express = require("express");
 const app = express();
+
+require("./startup/routes")(app);
 
 // Create logger WITHOUT MongoDB transport initially
 global.logger = winston.createLogger({
@@ -56,48 +50,6 @@ mongoose
     console.log("Couldn't connect to MongoDB...", error);
   });
 
-// process.on("uncaughtException", (error) => {
-//   logger.error("Uncaught Exception:", {
-//     metadata: {
-//       error: error.message,
-//       stack: error.stack,
-//       timestamp: new Date().toISOString(),
-//     },
-//   });
-//   setTimeout(() => process.exit(1), 100);
-// });
-
-// Error handlers (they'll use whatever transports are available)
-// process.on("unhandledRejection", (reason, promise) => {
-//   logger.error("Unhandled Rejection:", {
-//     metadata: {
-//       reason: reason.message || reason,
-//       stack: reason.stack,
-//       timestamp: new Date().toISOString(),
-//     },
-//   });
-
-//   setTimeout(() => process.exit(1), 100);
-// });
-
-// Test Promise error
-// const p = Promise.reject(new Error("Failed miserably"));
-// p.then(() => {
-//   console.log("Done");
-// });
-
-// Middleware
-app.use(express.json());
-app.use("/", homepage);
-app.use("/api/genre", genres);
-app.use("/api/customer", customers);
-app.use("/api/movie", movies);
-app.use("/api/rental", rentals);
-app.use("/api/user", users);
-app.use("/api/auth", auth);
-
-app.use(error); // should be the last middleware
-
 // Configuration
 console.log(app.get("env"));
 console.log("Application name:", config.get("name"));
@@ -111,9 +63,4 @@ if (!config.get("jwtPrivateKey")) {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on Port ${port}...`);
-
-  // Test error AFTER everything is set up
-  // setTimeout(() => {
-  //   throw new Error("Something failed during startup");
-  // }, 1000);
 });

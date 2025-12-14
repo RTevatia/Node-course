@@ -18,9 +18,19 @@ const app = express();
 
 // Create logger WITHOUT MongoDB transport initially
 global.logger = winston.createLogger({
+  level: "error",
+  exitOnError: false,
   transports: [
     new winston.transports.File({ filename: "logfile.log" }),
-    new winston.transports.Console(), // Always good to have console output
+    new winston.transports.Console(),
+  ],
+  exceptionHandlers: [
+    new winston.transports.File({ filename: "exceptions.log" }),
+    new winston.transports.Console(),
+  ],
+  rejectionHandlers: [
+    new winston.transports.File({ filename: "rejections.log" }),
+    new winston.transports.Console(),
   ],
 });
 
@@ -46,27 +56,35 @@ mongoose
     console.log("Couldn't connect to MongoDB...", error);
   });
 
-// Error handlers (they'll use whatever transports are available)
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection:", {
-    metadata: {
-      reason: reason.message || reason,
-      stack: reason.stack,
-      timestamp: new Date().toISOString(),
-    },
-  });
-});
+// process.on("uncaughtException", (error) => {
+//   logger.error("Uncaught Exception:", {
+//     metadata: {
+//       error: error.message,
+//       stack: error.stack,
+//       timestamp: new Date().toISOString(),
+//     },
+//   });
+//   setTimeout(() => process.exit(1), 100);
+// });
 
-process.on("uncaughtException", (error) => {
-  logger.error("Uncaught Exception:", {
-    metadata: {
-      error: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString(),
-    },
-  });
-  process.exit(1);
-});
+// Error handlers (they'll use whatever transports are available)
+// process.on("unhandledRejection", (reason, promise) => {
+//   logger.error("Unhandled Rejection:", {
+//     metadata: {
+//       reason: reason.message || reason,
+//       stack: reason.stack,
+//       timestamp: new Date().toISOString(),
+//     },
+//   });
+
+//   setTimeout(() => process.exit(1), 100);
+// });
+
+// Test Promise error
+// const p = Promise.reject(new Error("Failed miserably"));
+// p.then(() => {
+//   console.log("Done");
+// });
 
 // Middleware
 app.use(express.json());
@@ -93,4 +111,9 @@ if (!config.get("jwtPrivateKey")) {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on Port ${port}...`);
+
+  // Test error AFTER everything is set up
+  // setTimeout(() => {
+  //   throw new Error("Something failed during startup");
+  // }, 1000);
 });

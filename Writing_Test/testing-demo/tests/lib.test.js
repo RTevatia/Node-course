@@ -57,21 +57,37 @@ describe("getProduct", () => {
   });
 });
 
+// describe("registerUser", () => {
+//   it(
+//     ("should throw if username is falsy",
+//     () => {
+//       // Falsy values: null, undefined, NaN, 0, '', false
+//       const invalidArgs = [null, undefined, NaN, 0, "", false];
+//       invalidArgs.forEach((arg) => {
+//         expect(() => {
+//           lib.registerUser(null);
+//         }).toThrow();
+//       });
+//     })
+//   );
 
+//   it("should return a user object if valid username is passed", () => {
+//     const result = lib.registerUser("mosh");
+//     expect(result).toMatchObject({ username: "mosh" });
+//     expect(result.id).toBeGreaterThan(0);
+//   });
+// });
 
 describe("registerUser", () => {
-  if (
-    ("should throw if username is falsy",
-    () => {
-      // Falsy values: null, undefined, NaN, 0, '', false
-      const invalidArgs = [null, undefined, NaN, 0, "", false];
-      invalidArgs.forEach((arg) => {
-        expect(() => {
-          lib.registerUser(null);
-        }).toThrow();
-      });
-    })
-  );
+  it("should throw if username is falsy", () => {
+    // Falsy values: null, undefined, NaN, 0, '', false
+    const invalidArgs = [null, undefined, NaN, 0, "", false];
+    invalidArgs.forEach((args) => {
+      expect(() => {
+        lib.registerUser(args);
+      }).toThrow();
+    });
+  });
 
   it("should return a user object if valid username is passed", () => {
     const result = lib.registerUser("mosh");

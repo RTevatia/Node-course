@@ -49,10 +49,33 @@ describe("getCurrencies", () => {
 });
 
 describe("getProduct", () => {
-    it('should return the product with the given id', () => {
-        const result = lib.getProduct(1);
-        // expect(result).toEqual({ id: 1, price: 10 });
-        // expect(result).toMatchObject({ id: 1, price: 10 });
-        expect(result).toHaveProperty('id', 1);
+  it("should return the product with the given id", () => {
+    const result = lib.getProduct(1);
+    // expect(result).toEqual({ id: 1, price: 10 });
+    // expect(result).toMatchObject({ id: 1, price: 10 });
+    expect(result).toHaveProperty("id", 1);
+  });
+});
+
+
+
+describe("registerUser", () => {
+  if (
+    ("should throw if username is falsy",
+    () => {
+      // Falsy values: null, undefined, NaN, 0, '', false
+      const invalidArgs = [null, undefined, NaN, 0, "", false];
+      invalidArgs.forEach((arg) => {
+        expect(() => {
+          lib.registerUser(null);
+        }).toThrow();
+      });
     })
-})
+  );
+
+  it("should return a user object if valid username is passed", () => {
+    const result = lib.registerUser("mosh");
+    expect(result).toMatchObject({ username: "mosh" });
+    expect(result.id).toBeGreaterThan(0);
+  });
+});

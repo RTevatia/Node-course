@@ -2,13 +2,15 @@ const mongoose = require("mongoose");
 const winston = require("winston");
 require("winston-mongodb");
 const logger = require("./logger");
+const config = require("config");
 
 module.exports = async function () {
+  const db = config.get("db");
   // Connect MongoDB
   mongoose
-    .connect("mongodb://localhost/vidly")
+    .connect(db)
     .then(() => {
-      logger.info("Connected to MongoDB...");
+      logger.info(`Connected to ${db}...`);
 
       // Add MongoDB transport AFTER successful connection
       logger.add(

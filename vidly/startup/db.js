@@ -24,6 +24,6 @@ module.exports = async function () {
       logger.info("MongoDB logging enabled");
     })
     .catch((err) => {
-      logger.error("could not connect to MongoDB...", err);
+      logger.error(`could not connect to ${db}...`, err);
     });
 };

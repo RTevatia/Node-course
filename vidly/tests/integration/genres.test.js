@@ -2,15 +2,13 @@ const request = require("supertest");
 const { Genre } = require("../../models/genre");
 const { User } = require("../../models/user");
 
-let server;
-
 describe("/api/genre", () => {
+  let app;
   beforeEach(() => {
-    server = require("../../index");
+    app = require("../../index");
   });
 
   afterEach(async () => {
-    server.close();
     await Genre.deleteMany({});
   });
 
@@ -21,7 +19,7 @@ describe("/api/genre", () => {
         { name: "genre2" },
       ]);
 
-      const res = await request(server).get("/api/genre");
+      const res = await request(app).get("/api/genre");
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(2);
       expect(res.body.some((g) => g.name === "genre1")).toBeTruthy();
@@ -34,14 +32,14 @@ describe("/api/genre", () => {
       const genre = new Genre({ name: "genre1" });
       await genre.save();
 
-      const res = await request(server).get("/api/genre/" + genre._id);
+      const res = await request(app).get("/api/genre/" + genre._id);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("name", genre.name);
     });
 
     it("should return 404 if invalid id is passed", async () => {
-      const res = await request(server).get("/api/genre/1");
+      const res = await request(app).get("/api/genre/1");
       expect(res.status).toBe(404);
     });
   });
@@ -51,7 +49,7 @@ describe("/api/genre", () => {
     let name;
 
     const exec = async () => {
-      return await request(server)
+      return await request(app)
         .post("/api/genre")
         .set("x-auth-token", token)
         .send({ name }); // replace { name: name }

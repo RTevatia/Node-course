@@ -3,3 +3,4 @@ logfile.log
 exceptions.log
 rejections.log
 .expo/
+coverage/

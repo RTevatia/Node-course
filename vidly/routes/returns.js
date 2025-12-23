@@ -31,7 +31,7 @@ router.post("/", auth, async (req, res) => {
     { $inc: { numberInStock: 1 } }
   );
 
-  return res.status(200).send("Valid return request.");
+  return res.status(200).send(rental);
 });
 
 module.exports = router;
